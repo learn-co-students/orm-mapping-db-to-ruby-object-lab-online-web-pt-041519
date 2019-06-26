@@ -50,10 +50,11 @@ class Student
       SELECT *
       FROM students
       WHERE grade = 10
-      LIMIT #{number}
+      ORDER BY students.id
+      LIMIT ?
     SQL
 
-    DB[:conn].execute(sql).map { |row| self.new_from_db(row) }  
+    DB[:conn].execute(sql, number).map { |row| self.new_from_db(row) }  
   end
 
   # Return first student in grade 10
@@ -63,6 +64,7 @@ class Student
       SELECT *
       FROM students
       WHERE grade = 10
+      ORDER BY students.id
       LIMIT 1
     SQL
 
@@ -75,10 +77,11 @@ class Student
     sql = <<-SQL
       SELECT *
       FROM students
-      WHERE grade = #{grade}
+      WHERE grade = ?
+      ORDER BY students.id
     SQL
 
-    DB[:conn].execute(sql).map { |row| self.new_from_db(row) }
+    DB[:conn].execute(sql, grade).map { |row| self.new_from_db(row) }
   end
 
   # Find student in database and create new Student object from matching row
