@@ -2,17 +2,34 @@ class Student
   attr_accessor :id, :name, :grade
 
   def self.new_from_db(row)
-    # create a new Student object given a row from the database
+    student = self.new
+    student.id = row[0]
+    student.name = row[1]
+    student.grade = row[2]
+    student
   end
 
   def self.all
-    # retrieve all the rows from the "Students" database
-    # remember each row should be a new instance of the Student class
+    sql = <<-SQL
+    select * from students
+    SQL
+    
+    DB[:conn].execute(sql).map do |row|
+      Student.new_from_db(row)
+    end
   end
 
   def self.find_by_name(name)
-    # find the student in the database given a name
-    # return a new instance of the Student class
+    sql = <<-SQL
+    select * from students
+    SQL
+    
+    DB[:conn].execute(sql).map do |row|
+      if row[1] == name 
+        student = Student.new_from_db(row)
+      end
+      student
+    end.first
   end
   
   def save
@@ -40,4 +57,41 @@ class Student
     sql = "DROP TABLE IF EXISTS students"
     DB[:conn].execute(sql)
   end
+  
+  def self.all_students_in_grade_9
+    g9 = []
+    self.all.map {|student| g9 << student if student.grade == '9'}
+    g9
+  end
+  
+  def self.students_below_12th_grade
+    arr = []
+    self.all.map {|student| arr << student if student.grade != "12"}
+    arr
+  end
+  
+  def self.first_X_students_in_grade_10(x)
+    arr = []
+    i = 0
+    g10 = []
+    self.all.map {|student| g10 << student if student.grade == '10'}
+    until i == x
+      arr << g10[i]
+      i += 1
+    end
+    arr
+  end
+  
+  def self.first_student_in_grade_10
+    g10 = []
+    self.all.map {|student| g10 << student if student.grade == '10'}
+    g10[0]
+  end
+  
+  def self.all_students_in_grade_X(x)
+    g = []
+    self.all.map {|student| g << student if student.grade == x.to_s}
+    g
+  end
+  
 end
