@@ -1,6 +1,6 @@
 class Student
-  attr_accessor :name, :grade
-  attr_reader :id
+  attr_accessor :id, :name, :grade
+  # attr_reader :id
 
   def self.new_from_db(row)
     new_student = self.new
